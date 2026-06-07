@@ -19,7 +19,7 @@
     overflow: hidden;
 }
 
-/* Right column: messages – transparent so the NC33 theme background shows */
+/* Right column: messages */
 #ocsms-right {
     flex: 1;
     display: flex;
@@ -27,6 +27,15 @@
     height: 100%;
     overflow: hidden;
     background: transparent;
+    position: relative; /* anchor for absolute loaders */
+}
+
+/* Full-panel loading overlay — right */
+#ocsms-loader {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: var(--color-main-background, #fff);
 }
 
 /* Search box */
@@ -61,6 +70,15 @@
     flex: 1;
     overflow-y: auto;
     user-select: none;
+    position: relative; /* anchor for absolute loader */
+}
+
+/* Full-panel loading overlay — left */
+#app-contacts-loader {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: var(--color-main-background, #fff);
 }
 #app-mailbox-peers > ul {
     height: 100%;
@@ -342,18 +360,31 @@ mark.ocsms-hl-active {
     z-index: 1000;
     box-shadow: 0 -2px 8px rgba(0,0,0,.08);
 }
+/* FAB "new conversation" — fixed, always visible above compose bar */
 #ocsms-newconv-btn {
-    flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
-    border: 2px solid var(--color-primary, #0082c9);
+    position: fixed;
+    bottom: 120px; /* sits above the compose bar */
+    /* left set dynamically by positionFab() */
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: none;
     background: var(--color-primary, #0082c9);
     color: #000;
-    font-size: 1.3em; font-weight: bold; cursor: pointer; padding: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    align-self: flex-end; margin-bottom: 4px;
+    font-size: 2em;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 3px 10px rgba(0,0,0,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
 }
 #ocsms-newconv-btn:hover {
     background: var(--color-primary-hover, #006fad);
-    border-color: var(--color-primary-hover, #006fad);
+    box-shadow: 0 4px 14px rgba(0,0,0,.4);
 }
 #ocsms-compose-input-row { display: flex; gap: 8px; align-items: flex-end; }
 #ocsms-compose-msg {

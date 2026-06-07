@@ -35,7 +35,6 @@
 		bar.id = 'ocsms-compose-bar';
 		bar.innerHTML =
 			'<div id="ocsms-compose-input-row">'
-			+  '<button id="ocsms-newconv-btn" title="' + t('ocsms','New conversation') + '">+</button>'
 			+  '<textarea id="ocsms-compose-msg" placeholder="' + t('ocsms','Ctrl+Enter to send') + '"></textarea>'
 			+  '<button id="ocsms-compose-send" class="primary">' + t('ocsms','Send') + '</button>'
 			+ '</div>'
@@ -43,22 +42,43 @@
 		document.body.appendChild(bar);
 
 		composeBar = bar;
-		toNumberEl = null; // recipient line removed
+		toNumberEl = null;
 		msgArea    = document.getElementById('ocsms-compose-msg');
 		sendBtn    = document.getElementById('ocsms-compose-send');
 		statusEl   = document.getElementById('ocsms-compose-status');
-		newConvBtn = document.getElementById('ocsms-newconv-btn');
 
-		// Align left edge with right edge of #app-navigation
 		positionBar();
 		window.addEventListener('resize', positionBar);
 
-		// Events
 		sendBtn.addEventListener('click', doSend);
 		msgArea.addEventListener('keydown', function (e) {
 			if (e.ctrlKey && e.key === 'Enter') doSend();
 		});
-		newConvBtn.addEventListener('click', showModal);
+	}
+
+	function buildFab() {
+		var fab = document.createElement('button');
+		fab.id    = 'ocsms-newconv-btn';
+		fab.title = t('ocsms', 'New conversation');
+		fab.textContent = '+';
+		document.body.appendChild(fab);
+		newConvBtn = fab;
+
+		positionFab();
+		window.addEventListener('resize', positionFab);
+		fab.addEventListener('click', showModal);
+	}
+
+	function positionFab() {
+		var fab = document.getElementById('ocsms-newconv-btn');
+		if (!fab) return;
+		var nav = document.getElementById('ocsms-left');
+		if (nav) {
+			var r = nav.getBoundingClientRect();
+			fab.style.left = (r.left + r.width + 16) + 'px';
+		} else {
+			fab.style.left = '16px';
+		}
 	}
 
 	function buildModal() {
@@ -314,8 +334,8 @@
 
 	// ── Init ───────────────────────────────────────────────────────────────────
 	document.addEventListener('DOMContentLoaded', function () {
-		// Build compose bar and modal entirely via JS — never touch Vue's template
 		buildComposeBar();
+		buildFab();
 		buildModal();
 
 		// Hook history AFTER DOMContentLoaded so Vue has already run its own setup
