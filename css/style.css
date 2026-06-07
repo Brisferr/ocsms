@@ -62,17 +62,13 @@ body.dark #app {
 	text-align: center;
 }
 
-#app-content {
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-}
-
 #app-content-wrapper {
-	flex: 1;
-	overflow-y: auto;
 	padding: 15px;
-	min-height: 0;
+	min-width: auto !important;
+	min-height: auto !important;
+	height: auto;
+	/* Extra bottom padding so messages don't hide under the compose bar */
+	padding-bottom: 130px;
 }
 
 #app-content-header {
@@ -309,16 +305,21 @@ img.emoji {
 	color: #666;
 }
 
-/* ── Compose bar (bottom of right panel) ───────────────────────────────── */
+/* ── Compose bar — created by JS, fixed at bottom of conversation area ─── */
 
 #ocsms-compose-bar {
-	flex-shrink: 0;
-	display: flex;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	/* left is set dynamically by compose.js based on #app-navigation width */
+	display: none;
 	flex-direction: column;
 	gap: 6px;
 	padding: 8px 12px 10px;
 	border-top: 2px solid var(--color-border, #ddd);
 	background: var(--color-main-background, #fff);
+	z-index: 1000;
+	box-shadow: 0 -2px 8px rgba(0,0,0,.08);
 }
 
 #ocsms-compose-recipient {
@@ -343,20 +344,20 @@ img.emoji {
 
 #ocsms-newconv-btn {
 	flex-shrink: 0;
-	width: 28px;
-	height: 28px;
+	width: 26px;
+	height: 26px;
 	border-radius: 50%;
 	border: 2px solid var(--color-primary, #006aa3);
 	background: none;
 	color: var(--color-primary, #006aa3);
-	font-size: 1.2em;
+	font-size: 1.1em;
 	font-weight: bold;
 	cursor: pointer;
-	line-height: 1;
 	padding: 0;
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	line-height: 1;
 }
 
 #ocsms-newconv-btn:hover {
@@ -373,7 +374,7 @@ img.emoji {
 #ocsms-compose-msg {
 	flex: 1;
 	min-height: 44px;
-	max-height: 120px;
+	max-height: 100px;
 	resize: vertical;
 	border: 1px solid var(--color-border, #ccc);
 	border-radius: var(--border-radius, 3px);
@@ -395,27 +396,29 @@ img.emoji {
 	align-self: flex-end;
 }
 
-#ocsms-compose-status-row {
-	min-height: 1em;
-}
-
 #ocsms-compose-status {
 	font-size: 0.82em;
+	min-height: 1em;
+	display: block;
 }
 
 #ocsms-compose-status[data-status="success"] { color: #4CAF50; }
 #ocsms-compose-status[data-status="error"]   { color: #D32F2F; }
 #ocsms-compose-status[data-status="loading"] { color: var(--color-text-lighter, #666); }
 
-/* ── New conversation modal ────────────────────────────────────────────── */
+/* ── New conversation modal — created by JS ────────────────────────────── */
 
 #ocsms-newconv-modal {
 	position: fixed;
 	inset: 0;
 	z-index: 9999;
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: center;
+}
+
+#ocsms-newconv-modal.open {
+	display: flex;
 }
 
 #ocsms-newconv-backdrop {
@@ -431,17 +434,14 @@ img.emoji {
 	border-radius: var(--border-radius-large, 6px);
 	box-shadow: 0 4px 24px rgba(0,0,0,.25);
 	padding: 24px 28px;
-	min-width: 320px;
+	min-width: 300px;
 	max-width: 90vw;
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
 }
 
-#ocsms-newconv-dialog h3 {
-	margin: 0;
-	font-size: 1.1em;
-}
+#ocsms-newconv-dialog h3 { margin: 0; font-size: 1.1em; }
 
 #ocsms-newconv-input {
 	width: 100%;
@@ -463,7 +463,7 @@ img.emoji {
 	gap: 8px;
 }
 
-/* ── New conversation hint ─────────────────────────────────────────────── */
+/* ── New conversation hint (injected by JS inside Vue's wrapper) ─────── */
 
 .ocsms-new-conv-hint {
 	text-align: center;
