@@ -98,7 +98,7 @@
 	// ── Positioning ────────────────────────────────────────────────────────────
 	function positionBar() {
 		if (!composeBar) return;
-		var nav = document.getElementById('app-navigation');
+		var nav = document.getElementById('ocsms-left');
 		if (nav) {
 			var r = nav.getBoundingClientRect();
 			composeBar.style.left = (r.left + r.width) + 'px';
@@ -182,7 +182,7 @@
 
 	function renderOutbox(messages) {
 		// Inject outbox section at end of the conversation wrapper (Vue doesn't manage our injected el)
-		var wrapper = document.getElementById('app-content-wrapper');
+		var wrapper = document.getElementById('ocsms-messages-wrap');
 		if (!wrapper) return;
 
 		var section = document.getElementById('ocsms-outbox-section');
@@ -274,7 +274,7 @@
 	}
 
 	function showNewConvHint(phone) {
-		var wrapper = document.getElementById('app-content-wrapper');
+		var wrapper = document.getElementById('ocsms-messages-wrap');
 		if (!wrapper) return;
 		var hint = document.getElementById('ocsms-new-conv-hint');
 		if (!hint) {
