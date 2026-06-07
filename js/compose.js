@@ -2,12 +2,12 @@
 	'use strict';
 
 	// ── State ──────────────────────────────────────────────────────────────────
-	var currentPhone  = null;   // phone number of the open conversation
-	var newConvPhone  = null;   // phone number of a new (not yet synced) conversation
+	var currentPhone  = null;
+	var newConvPhone  = null;
 	var outboxTimer   = null;
 
-	// DOM refs — set after elements are created
-	var composeBar, toNumberEl, msgArea, sendBtn, statusEl, newConvBtn;
+	// DOM refs
+	var composeBar, msgArea, sendBtn, statusEl, newConvBtn;
 	var modal, modalInput;
 
 	// ── Helpers ────────────────────────────────────────────────────────────────
@@ -18,18 +18,11 @@
 		return m ? decodeURIComponent(m[1]) : null;
 	}
 
-	function labelForPhone(phone) {
-		var a = document.querySelector('a[mailbox-navigation="' + phone + '"]');
-		if (!a) return phone;
-		var txt = a.textContent.replace(/\s*\(\d+\)\s*$/, '').trim();
-		return (txt && txt !== phone) ? txt + ' (' + phone + ')' : phone;
-	}
-
 	function escapeHtml(s) {
 		return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 	}
 
-	// ── Build DOM elements once ────────────────────────────────────────────────
+	// ── Build compose bar (FAB is the last button in the input row) ────────────
 	function buildComposeBar() {
 		var bar = document.createElement('div');
 		bar.id = 'ocsms-compose-bar';
@@ -37,15 +30,16 @@
 			'<div id="ocsms-compose-input-row">'
 			+  '<textarea id="ocsms-compose-msg" placeholder="' + t('ocsms','Ctrl+Enter to send') + '"></textarea>'
 			+  '<button id="ocsms-compose-send" class="primary">' + t('ocsms','Send') + '</button>'
+			+  '<button id="ocsms-newconv-btn" title="' + t('ocsms','New conversation') + '">+</button>'
 			+ '</div>'
 			+ '<span id="ocsms-compose-status"></span>';
 		document.body.appendChild(bar);
 
 		composeBar = bar;
-		toNumberEl = null;
 		msgArea    = document.getElementById('ocsms-compose-msg');
 		sendBtn    = document.getElementById('ocsms-compose-send');
 		statusEl   = document.getElementById('ocsms-compose-status');
+		newConvBtn = document.getElementById('ocsms-newconv-btn');
 
 		positionBar();
 		window.addEventListener('resize', positionBar);
@@ -54,33 +48,10 @@
 		msgArea.addEventListener('keydown', function (e) {
 			if (e.ctrlKey && e.key === 'Enter') doSend();
 		});
+		newConvBtn.addEventListener('click', showModal);
 	}
 
-	function buildFab() {
-		var fab = document.createElement('button');
-		fab.id    = 'ocsms-newconv-btn';
-		fab.title = t('ocsms', 'New conversation');
-		fab.textContent = '+';
-		document.body.appendChild(fab);
-		newConvBtn = fab;
-
-		positionFab();
-		window.addEventListener('resize', positionFab);
-		fab.addEventListener('click', showModal);
-	}
-
-	function positionFab() {
-		var fab = document.getElementById('ocsms-newconv-btn');
-		if (!fab) return;
-		var nav = document.getElementById('ocsms-left');
-		if (nav) {
-			var r = nav.getBoundingClientRect();
-			fab.style.left = (r.left + r.width + 16) + 'px';
-		} else {
-			fab.style.left = '16px';
-		}
-	}
-
+	// ── Build new-conversation modal ───────────────────────────────────────────
 	function buildModal() {
 		var m = document.createElement('div');
 		m.id = 'ocsms-newconv-modal';
@@ -111,28 +82,22 @@
 		});
 	}
 
-	// ── Positioning ────────────────────────────────────────────────────────────
+	// ── Positioning (aligns bar left edge with right edge of #ocsms-left) ──────
 	function positionBar() {
 		if (!composeBar) return;
 		var nav = document.getElementById('ocsms-left');
 		if (nav) {
-			var r = nav.getBoundingClientRect();
-			composeBar.style.left = (r.left + r.width) + 'px';
+			composeBar.style.left = (nav.getBoundingClientRect().right) + 'px';
 		} else {
 			composeBar.style.left = '0';
 		}
 	}
 
-	// ── Compose bar show/hide ──────────────────────────────────────────────────
+	// ── Compose bar show / hide ────────────────────────────────────────────────
 	function showBar(phone, isNew) {
 		if (!composeBar) return;
-		if (isNew) {
-			currentPhone = null;
-			newConvPhone = phone;
-		} else {
-			currentPhone = phone;
-			newConvPhone = null;
-		}
+		if (isNew) { currentPhone = null;  newConvPhone = phone; }
+		else       { currentPhone = phone; newConvPhone = null;  }
 		positionBar();
 		composeBar.style.display = 'flex';
 	}
@@ -145,7 +110,7 @@
 
 	function setStatus(type, msg) {
 		if (!statusEl) return;
-		statusEl.textContent = msg;
+		statusEl.textContent    = msg;
 		statusEl.dataset.status = type || '';
 	}
 
@@ -153,11 +118,11 @@
 	function doSend() {
 		var phone   = currentPhone || newConvPhone;
 		var message = msgArea ? msgArea.value.trim() : '';
-		if (!phone)   { setStatus('error', t('ocsms', 'No recipient.')); return; }
-		if (!message) { setStatus('error', t('ocsms', 'Message is empty.')); return; }
+		if (!phone)   { setStatus('error', t('ocsms','No recipient.')); return; }
+		if (!message) { setStatus('error', t('ocsms','Message is empty.')); return; }
 
 		sendBtn.disabled = true;
-		setStatus('loading', t('ocsms', 'Sending…'));
+		setStatus('loading', t('ocsms','Sending…'));
 
 		fetch(ncUrl('/front-api/v1/send'), {
 			method: 'POST',
@@ -167,18 +132,15 @@
 		.then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
 		.then(function (res) {
 			if (res.ok && res.data.status) {
-				var msg = newConvPhone
-					? t('ocsms', 'Queued — contact will appear after sync.')
-					: t('ocsms', 'Queued — your phone will send it shortly.');
-				setStatus('success', msg);
+				setStatus('success', t('ocsms','Queued — your phone will send it shortly.'));
 				msgArea.value = '';
 				refreshOutbox(phone);
-				setTimeout(function () { setStatus('', ''); }, 4000);
+				setTimeout(function () { setStatus('',''); }, 4000);
 			} else {
-				setStatus('error', res.data.msg || t('ocsms', 'Failed to queue message.'));
+				setStatus('error', res.data.msg || t('ocsms','Failed to queue message.'));
 			}
 		})
-		.catch(function () { setStatus('error', t('ocsms', 'Network error.')); })
+		.catch(function () { setStatus('error', t('ocsms','Network error.')); })
 		.finally(function () { sendBtn.disabled = false; });
 	}
 
@@ -195,37 +157,29 @@
 	}
 
 	function renderOutbox(messages) {
-		// Inject outbox section at end of the conversation wrapper (Vue doesn't manage our injected el)
 		var wrapper = document.getElementById('ocsms-messages-wrap');
 		if (!wrapper) return;
-
 		var section = document.getElementById('ocsms-outbox-section');
 		if (!section) {
 			section = document.createElement('div');
 			section.id = 'ocsms-outbox-section';
 			wrapper.appendChild(section);
 		}
-
 		if (!messages || messages.length === 0) {
-			section.innerHTML = '';
-			section.style.display = 'none';
-			return;
+			section.innerHTML = ''; section.style.display = 'none'; return;
 		}
 		section.style.display = 'block';
-
-		var lblStatus = { 0: t('ocsms','Queued'), 2: t('ocsms','Failed') };
-		var clsStatus = { 0: 'queued', 2: 'failed' };
+		var lbl = { 0: t('ocsms','Queued'), 2: t('ocsms','Failed') };
+		var cls = { 0: 'queued', 2: 'failed' };
 		var html = '<div class="ocsms-outbox-header">' + t('ocsms','Outbox') + '</div>';
 		messages.forEach(function (msg) {
-			var cls   = clsStatus[msg.status]  || 'queued';
-			var label = lblStatus[msg.status] || '';
 			var retry = msg.status === 2
 				? '<button class="ocsms-outbox-retry" data-id="' + msg.id + '">' + t('ocsms','Retry') + '</button>'
 				: '';
 			html += '<div class="ocsms-outbox-item">'
 				+ '<div class="ocsms-outbox-msg">' + escapeHtml(msg.msg) + '</div>'
 				+ '<div class="ocsms-outbox-meta">'
-				+ '<span class="ocsms-outbox-status ' + cls + '">' + label + '</span>'
+				+ '<span class="ocsms-outbox-status ' + (cls[msg.status]||'queued') + '">' + (lbl[msg.status]||'') + '</span>'
 				+ retry + '</div></div>';
 		});
 		section.innerHTML = html;
@@ -244,72 +198,93 @@
 		outboxTimer = setInterval(refreshOutbox, 15000);
 	}
 
-	// ── New conversation modal ─────────────────────────────────────────────────
-	function showModal() {
-		if (!modal) return;
-		modalInput.value = '';
-		modal.classList.add('open');
-		modalInput.focus();
+	// ── Custom header for new conversations ────────────────────────────────────
+	// Vue's #ocsms-header only shows when messages.length > 0. For a brand-new
+	// contact with no history we inject our own header that looks the same.
+	function showNewConvHeader(phone) {
+		var right = document.getElementById('ocsms-right');
+		if (!right) return;
+		var h = document.getElementById('ocsms-new-conv-header');
+		if (!h) {
+			h = document.createElement('div');
+			h.id = 'ocsms-new-conv-header';
+			// Insert at the top of #ocsms-right, before the loader/messages
+			right.insertBefore(h, right.firstChild);
+		}
+		h.innerHTML =
+			'<div id="ocsms-new-conv-phone">' + escapeHtml(phone) + '</div>'
+			+ '<div id="ocsms-new-conv-hint">' + t('ocsms','New conversation — write your first message below') + '</div>';
+		h.style.display = 'flex';
 	}
 
-	function hideModal() {
-		if (modal) modal.classList.remove('open');
+	function hideNewConvHeader() {
+		var h = document.getElementById('ocsms-new-conv-header');
+		if (h) h.style.display = 'none';
 	}
+
+	// ── New conversation modal ─────────────────────────────────────────────────
+	function showModal() { if (!modal) return; modalInput.value = ''; modal.classList.add('open'); modalInput.focus(); }
+	function hideModal() { if (modal) modal.classList.remove('open'); }
 
 	function startConversation(rawInput) {
 		var input = rawInput.trim();
 		if (!input) return;
 		hideModal();
 
-		// Try exact phone number match in contact list
-		var byNav = document.querySelector('a[mailbox-navigation="' + input + '"]');
+		// 1. Try exact phone number match in contact list
+		var byNav   = document.querySelector('a[mailbox-navigation="' + input + '"]');
+		var phone   = input;
 
+		// 2. Try case-insensitive label match (contact name)
 		if (!byNav) {
-			// Try case-insensitive label match
 			var links = document.querySelectorAll('a[mailbox-label]');
 			for (var i = 0; i < links.length; i++) {
-				if ((links[i].getAttribute('mailbox-label') || '').toLowerCase() === input.toLowerCase()) {
+				if ((links[i].getAttribute('mailbox-label') || '').toLowerCase().trim() === input.toLowerCase()) {
 					byNav = links[i];
+					phone = links[i].getAttribute('mailbox-navigation') || input;
 					break;
 				}
 			}
 		}
 
 		if (byNav) {
-			// Existing contact — simulate click to load via Vue
+			// ── Existing contact ───────────────────────────────────────────────
+			hideNewConvHeader();
 			var li = byNav.closest('li');
-			if (li) li.click();
+			if (li) li.click(); // triggers Vue's loadConversation
 		} else {
-			// New number — show compose bar pre-filled, inject hint
-			showNewConvHint(input);
-			showBar(input, true);
-			renderOutbox([]);
-		}
-	}
+			// ── New number ─────────────────────────────────────────────────────
+			var contact = { label: phone, nav: phone, unread: 0, lastmsg: 0, uid: phone };
 
-	function showNewConvHint(phone) {
-		var wrapper = document.getElementById('ocsms-messages-wrap');
-		if (!wrapper) return;
-		var hint = document.getElementById('ocsms-new-conv-hint');
-		if (!hint) {
-			hint = document.createElement('div');
-			hint.id = 'ocsms-new-conv-hint';
-			hint.className = 'ocsms-new-conv-hint';
-			wrapper.insertBefore(hint, wrapper.firstChild);
-		}
-		hint.textContent = t('ocsms', 'New conversation with') + ' ' + phone;
-		hint.style.display = 'block';
-	}
+			// Add to Vue's reactive contact list (appears immediately in left column)
+			if (window.ContactList) {
+				window.ContactList.addContact(contact);
+			}
 
-	function clearNewConvHint() {
-		var hint = document.getElementById('ocsms-new-conv-hint');
-		if (hint) hint.style.display = 'none';
+			// Small delay for Vue to render the new <li> before we interact with it
+			setTimeout(function () {
+				// Use Vue's own loadConversation: updates URL + calls Conversation.fetch
+				if (window.ContactList) {
+					window.ContactList.loadConversation(contact);
+				} else if (window.Conversation) {
+					window.Conversation.fetch(contact);
+					OC.Util.History.pushState('phonenumber=' + encodeURIComponent(phone));
+				}
+
+				// Inject our custom header (Vue's header requires messages.length > 0)
+				setTimeout(function () {
+					showNewConvHeader(phone);
+					showBar(phone, true);
+					scheduleOutboxRefresh();
+				}, 250);
+			}, 60);
+		}
 	}
 
 	// ── Conversation change ────────────────────────────────────────────────────
 	function onConversationChange() {
 		var phone = phoneFromUrl();
-		clearNewConvHint();
+		hideNewConvHeader();
 		if (phone) {
 			showBar(phone, false);
 			scheduleOutboxRefresh();
@@ -319,8 +294,7 @@
 		}
 	}
 
-	// Intercept Vue's pushState AFTER Vue has mounted (inside DOMContentLoaded)
-	// so we don't interfere with Vue's own initialisation
+	// Hook Vue's pushState AFTER DOMContentLoaded (Vue already mounted)
 	function hookHistory() {
 		var orig = history.pushState.bind(history);
 		history.pushState = function () {
@@ -335,14 +309,8 @@
 	// ── Init ───────────────────────────────────────────────────────────────────
 	document.addEventListener('DOMContentLoaded', function () {
 		buildComposeBar();
-		buildFab();
 		buildModal();
-
-		// Hook history AFTER DOMContentLoaded so Vue has already run its own setup
 		hookHistory();
-
-		// Restore state if a conversation was open on page load
-		// 800ms delay to ensure Vue has finished its initial render
 		setTimeout(onConversationChange, 800);
 	});
 })();
