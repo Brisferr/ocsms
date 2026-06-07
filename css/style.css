@@ -62,11 +62,17 @@ body.dark #app {
 	text-align: center;
 }
 
+#app-content {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
 #app-content-wrapper {
+	flex: 1;
+	overflow-y: auto;
 	padding: 15px;
-	min-width: auto !important;
-	min-height: auto !important;
-	height: auto;
+	min-height: 0;
 }
 
 #app-content-header {
@@ -303,90 +309,168 @@ img.emoji {
 	color: #666;
 }
 
-/* ── Compose panel ─────────────────────────────────────────────────────── */
+/* ── Compose bar (bottom of right panel) ───────────────────────────────── */
 
-#ocsms-compose {
-	border-bottom: 1px solid var(--color-border, #ddd);
-}
-
-#ocsms-compose-toggle {
-	width: 100%;
-	text-align: left;
-	padding: 12px 16px;
-	background: none;
-	border: none;
-	border-radius: 0;
-	font-weight: bold;
-	cursor: pointer;
-	color: var(--color-main-text, #222);
-	background-image: none;
-}
-
-#ocsms-compose-toggle:hover {
-	background-color: var(--color-background-hover, #f5f5f5);
-}
-
-#ocsms-compose-panel {
-	display: none;
-	padding: 8px 12px 12px;
-	background: var(--color-background-dark, #f5f5f5);
-	border-top: 1px solid var(--color-border, #ddd);
-}
-
-#ocsms-compose-panel.open {
-	display: block;
-}
-
-.ocsms-compose-row {
+#ocsms-compose-bar {
+	flex-shrink: 0;
 	display: flex;
 	flex-direction: column;
-	margin-bottom: 8px;
+	gap: 6px;
+	padding: 8px 12px 10px;
+	border-top: 2px solid var(--color-border, #ddd);
+	background: var(--color-main-background, #fff);
 }
 
-.ocsms-compose-row label {
-	font-size: 0.85em;
-	margin-bottom: 2px;
-	color: var(--color-text-lighter, #666);
+#ocsms-compose-recipient {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.9em;
+	color: var(--color-text-lighter, #555);
 }
 
-#ocsms-compose-to,
+.ocsms-compose-to-label {
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+#ocsms-compose-to-number {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#ocsms-newconv-btn {
+	flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: 2px solid var(--color-primary, #006aa3);
+	background: none;
+	color: var(--color-primary, #006aa3);
+	font-size: 1.2em;
+	font-weight: bold;
+	cursor: pointer;
+	line-height: 1;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#ocsms-newconv-btn:hover {
+	background: var(--color-primary, #006aa3);
+	color: #fff;
+}
+
+#ocsms-compose-input-row {
+	display: flex;
+	gap: 8px;
+	align-items: flex-end;
+}
+
 #ocsms-compose-msg {
-	width: 100%;
-	box-sizing: border-box;
+	flex: 1;
+	min-height: 44px;
+	max-height: 120px;
+	resize: vertical;
 	border: 1px solid var(--color-border, #ccc);
 	border-radius: var(--border-radius, 3px);
-	padding: 6px 8px;
+	padding: 8px;
+	font-size: 0.95em;
 	background: var(--color-main-background, #fff);
 	color: var(--color-main-text, #222);
-	font-size: 0.95em;
-	resize: vertical;
+	box-sizing: border-box;
 }
 
-#ocsms-compose-to:focus,
 #ocsms-compose-msg:focus {
 	outline: 2px solid var(--color-primary, #006aa3);
 	border-color: transparent;
 }
 
-.ocsms-compose-actions {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 8px;
+#ocsms-compose-send {
+	flex-shrink: 0;
+	padding: 8px 20px;
+	align-self: flex-end;
 }
 
-#ocsms-compose-send {
-	padding: 6px 18px;
+#ocsms-compose-status-row {
+	min-height: 1em;
 }
 
 #ocsms-compose-status {
-	flex: 1;
-	font-size: 0.85em;
+	font-size: 0.82em;
 }
 
 #ocsms-compose-status[data-status="success"] { color: #4CAF50; }
 #ocsms-compose-status[data-status="error"]   { color: #D32F2F; }
 #ocsms-compose-status[data-status="loading"] { color: var(--color-text-lighter, #666); }
+
+/* ── New conversation modal ────────────────────────────────────────────── */
+
+#ocsms-newconv-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#ocsms-newconv-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0,0,0,.45);
+}
+
+#ocsms-newconv-dialog {
+	position: relative;
+	z-index: 1;
+	background: var(--color-main-background, #fff);
+	border-radius: var(--border-radius-large, 6px);
+	box-shadow: 0 4px 24px rgba(0,0,0,.25);
+	padding: 24px 28px;
+	min-width: 320px;
+	max-width: 90vw;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+#ocsms-newconv-dialog h3 {
+	margin: 0;
+	font-size: 1.1em;
+}
+
+#ocsms-newconv-input {
+	width: 100%;
+	box-sizing: border-box;
+	border: 1px solid var(--color-border, #ccc);
+	border-radius: var(--border-radius, 3px);
+	padding: 8px 10px;
+	font-size: 1em;
+}
+
+#ocsms-newconv-input:focus {
+	outline: 2px solid var(--color-primary, #006aa3);
+	border-color: transparent;
+}
+
+.ocsms-newconv-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+/* ── New conversation hint ─────────────────────────────────────────────── */
+
+.ocsms-new-conv-hint {
+	text-align: center;
+	padding: 40px 20px 20px;
+	color: var(--color-text-lighter, #888);
+	font-size: 1.1em;
+}
 
 /* ── Outbox section (pending + failed queue messages) ───────────────────── */
 

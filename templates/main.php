@@ -47,30 +47,6 @@ use \OCA\Ocsms\Lib\CountryCodes;
 
 <div id="app">
     <div id="app-navigation">
-        <div id="ocsms-compose">
-            <button id="ocsms-compose-toggle" class="icon-add" title="<?php p($l->t('New message'));?>">
-                <?php p($l->t('New message'));?>
-            </button>
-            <div id="ocsms-compose-panel">
-                <div class="ocsms-compose-row">
-                    <label for="ocsms-compose-to"><?php p($l->t('To'));?></label>
-                    <input type="tel" id="ocsms-compose-to"
-                           placeholder="<?php p($l->t('+32…'));?>" />
-                </div>
-                <div class="ocsms-compose-row">
-                    <label for="ocsms-compose-msg"><?php p($l->t('Message'));?></label>
-                    <textarea id="ocsms-compose-msg" rows="3"
-                              placeholder="<?php p($l->t('Ctrl+Enter to send'));?>"></textarea>
-                </div>
-                <div class="ocsms-compose-actions">
-                    <span id="ocsms-compose-status"></span>
-                    <button id="ocsms-compose-send" class="primary">
-                        <?php p($l->t('Send'));?>
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <div id="app-mailbox-peers">
             <div id="app-contacts-loader" class="icon-loading" v-if="isContactsLoading">
             </div>
@@ -161,8 +137,39 @@ use \OCA\Ocsms\Lib\CountryCodes;
 					</div>
 					<div class="msg-spacer"></div>
 				</div>
-<!--				<div id="searchresults"></div>-->
 			</div>
+			<!-- Outbox (pending/failed queue messages) injected here by compose.js -->
+		</div>
+
+		<!-- Compose bar — always at the bottom of the conversation panel -->
+		<div id="ocsms-compose-bar" style="display:none">
+			<div id="ocsms-compose-recipient">
+				<span class="ocsms-compose-to-label"><?php p($l->t('To'));?></span>
+				<span id="ocsms-compose-to-number"></span>
+				<button id="ocsms-newconv-btn" title="<?php p($l->t('New conversation'));?>">+</button>
+			</div>
+			<div id="ocsms-compose-input-row">
+				<textarea id="ocsms-compose-msg"
+				          placeholder="<?php p($l->t('Ctrl+Enter to send'));?>"></textarea>
+				<button id="ocsms-compose-send" class="primary"><?php p($l->t('Send'));?></button>
+			</div>
+			<div id="ocsms-compose-status-row">
+				<span id="ocsms-compose-status"></span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- New conversation modal -->
+<div id="ocsms-newconv-modal" style="display:none">
+	<div id="ocsms-newconv-backdrop"></div>
+	<div id="ocsms-newconv-dialog">
+		<h3><?php p($l->t('New conversation'));?></h3>
+		<label for="ocsms-newconv-input"><?php p($l->t('To (number or contact)'));?></label>
+		<input type="tel" id="ocsms-newconv-input" placeholder="<?php p($l->t('+32… or contact name'));?>" />
+		<div class="ocsms-newconv-actions">
+			<button id="ocsms-newconv-cancel"><?php p($l->t('Cancel'));?></button>
+			<button id="ocsms-newconv-start" class="primary"><?php p($l->t('Start'));?></button>
 		</div>
 	</div>
 </div>
