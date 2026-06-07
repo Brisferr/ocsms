@@ -1,0 +1,537 @@
+#app {
+	display: flex;
+    width: 100%;
+}
+
+body.dark #app {
+	color: var(--color-background-dark);
+}
+
+#app-navigation {
+	box-sizing: border-box;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	overflow-x: auto;
+	flex: 1;
+}
+/* Navigation: folder like structure */
+#app-mailbox-peers {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	overflow-x: auto;
+	flex: 1;
+}
+
+#app-mailbox-peers > ul {
+	position: relative;
+	height: 100%;
+	overflow: auto;
+	box-sizing: border-box;
+}
+#app-mailbox-peers li {
+	position: relative;
+	padding: 10px;
+	width: 100%;
+	border-top: 1px solid #eee;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+}
+
+#app-mailbox-peers li:hover > a,
+#app-mailbox-peers li:hover,
+#app-mailbox-peers .selected,
+#app-mailbox-peers .selected a {
+	background-color: #f8f8f8;
+}
+
+#app-mailbox-peers li > a, #ocsms-empty-peers {
+	line-height: 44px;
+	padding: 0 12px;
+}
+#app-mailbox-peers li > a {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#ocsms-empty-peers {
+	color: #666;
+	text-align: center;
+}
+
+#app-content-wrapper {
+	padding: 15px;
+	min-width: auto !important;
+	min-height: auto !important;
+	height: auto;
+}
+
+#app-content-header {
+	background-color: #E6E6E6;
+	min-height: 100px;
+	width: auto;
+	top: 0px;
+	position: -webkit-sticky;
+	position: sticky;
+	padding: 12px;
+	box-shadow: 0 1px 0 0 #CCC;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+}
+
+@media screen and (max-width : 770px) {
+	#app-content-header {
+		width: 100%;
+	}
+}
+
+#ocsms-contact-avatar {
+	background-color: transparent;
+	height: 75px;
+	width: 75px;
+	font-size: 2.5em;
+	margin-right: 1rem;
+}
+
+#ocsms-contact-details {
+	flex-grow: 1;
+}
+
+#ocsms-phone-label {
+	font-weight: normal;
+	color: #fff;
+	float: left;
+	font-size: 20px;
+	margin-bottom: .5rem;
+}
+
+#ocsms-phone-opt-number {
+	color: #fff;
+	float: left;
+	width: 100%;
+	margin-bottom: .5rem;
+}
+
+#ocsms-phone-msg-nb {
+	color: #fff;
+	float: left;
+	width: 100%;
+}
+
+#ocsms-conversation-removal {
+	float: left;
+	margin-left: 25px;
+}
+
+#ocsms-conversation-removal:hover,
+#ocsms-message-removal:hover,
+#app-mailbox-peers li:hover {
+	cursor: pointer;
+}
+
+#ocsms-message-removal {
+	float: right;
+	margin-left: 10px;
+}
+
+#ocsms-empty-conversation {
+	position: absolute;
+	text-align: center;
+	top: 40%;
+	width: 100%;
+	padding: 20px;
+	color: #666;
+	font-size: 32px;
+	line-height: normal;
+}
+
+.msg-sent, .msg-recv {
+	border: 1px solid #ccc;
+	border-left-width: 4px;
+	border-radius: 2px;
+	margin: 4px;
+	max-width: 50%;
+	padding: 8px;
+	box-shadow: 0px 1px 2px 0px #0000004d;
+}
+
+.msg-sent {
+	border-color: #a0ce89;
+	background: #e0ffd1;
+	float: right;
+}
+
+.msg-recv {
+	background: #f5f5f5;
+	float: left;
+}
+
+.msg-sent a:link, .msg-sent a:visited, .msg-recv a:link, .msg-recv a:visited {
+        text-decoration: underline;
+}
+
+.msg-date {
+	color: #666;
+	font-style: italic;
+	font-size: 90%;
+	float: right;
+	line-height: 16px;
+	margin-top: .5rem;
+	font-size: smaller;
+	transition: color .3s ease;
+}
+
+.msg-recv:hover .msg-date,
+.msg-sent:hover .msg-date{
+	color: #333;
+}
+
+#app-content-wrapper .icon-delete {
+	opacity: .2;
+	margin-top: .5rem;
+}
+
+#app-content-wrapper .icon-delete:hover {
+	opacity: 1;
+}
+
+.ocsms-messages-container {
+        width: 100%;
+}
+
+.msg-spacer {
+	clear: both;
+}
+
+.ocsms-plavatar, .ocsms-plavatar-big {
+	display: inline-block;
+	height: 40px;
+	min-height: 40px;
+	width: 40px;
+	min-width: 40px;
+	line-height: 40px;
+	border-radius: 50%;
+	vertical-align: middle;
+	/*! margin-right: 10px; */
+	color: white;
+	text-align: center;
+	font-size: 1.5em;
+	text-transform: capitalize;
+	object-fit: cover;
+}
+
+.ocsms-plavatar-big {
+	height: 75px;
+	min-height: 75px;
+	width: 75px;
+	min-width: 75px;
+	line-height: 55px;
+}
+
+.ocsms-plname {
+	display: inline-block;
+}
+
+#app-settings {
+	width: 100%;
+}
+
+#app-settings-header, #app-settings-content {
+	width: auto;
+}
+
+#app-settings-content .new-button, #app-settings-content .crit-button {
+	height: 34px;
+	vertical-align: middle;
+	background-size: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+#app-settings-content .new-button {
+	width: 32px;
+}
+
+#app-settings-content .crit-button {
+	width: 200px;
+	background-color: #822C19;
+	padding: 0 2em;
+}
+
+
+#app-settings-content input[type="checkbox"] {
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.label-invalid-input {
+	color: red;
+}
+
+label {
+	font-weight: bold;
+}
+
+.icon-loading {
+	margin: 88px auto;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
+
+.contact-list {
+	display: flex;
+	flex-direction: column;
+}
+
+img.emoji {
+	height: 1em;
+	width: 1em;
+	margin: 0 .05em 0 .1em;
+	vertical-align: -0.1em;
+}
+
+.contact-list-no-contact {
+	padding: 1em;
+	font-size: 1.5em;
+	font-weight: bold;
+	color: #666;
+}
+
+/* ── Compose panel ─────────────────────────────────────────────────────── */
+
+#ocsms-compose {
+	border-bottom: 1px solid var(--color-border, #ddd);
+}
+
+#ocsms-compose-toggle {
+	width: 100%;
+	text-align: left;
+	padding: 12px 16px;
+	background: none;
+	border: none;
+	border-radius: 0;
+	font-weight: bold;
+	cursor: pointer;
+	color: var(--color-main-text, #222);
+	background-image: none;
+}
+
+#ocsms-compose-toggle:hover {
+	background-color: var(--color-background-hover, #f5f5f5);
+}
+
+#ocsms-compose-panel {
+	display: none;
+	padding: 8px 12px 12px;
+	background: var(--color-background-dark, #f5f5f5);
+	border-top: 1px solid var(--color-border, #ddd);
+}
+
+#ocsms-compose-panel.open {
+	display: block;
+}
+
+.ocsms-compose-row {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 8px;
+}
+
+.ocsms-compose-row label {
+	font-size: 0.85em;
+	margin-bottom: 2px;
+	color: var(--color-text-lighter, #666);
+}
+
+#ocsms-compose-to,
+#ocsms-compose-msg {
+	width: 100%;
+	box-sizing: border-box;
+	border: 1px solid var(--color-border, #ccc);
+	border-radius: var(--border-radius, 3px);
+	padding: 6px 8px;
+	background: var(--color-main-background, #fff);
+	color: var(--color-main-text, #222);
+	font-size: 0.95em;
+	resize: vertical;
+}
+
+#ocsms-compose-to:focus,
+#ocsms-compose-msg:focus {
+	outline: 2px solid var(--color-primary, #006aa3);
+	border-color: transparent;
+}
+
+.ocsms-compose-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+#ocsms-compose-send {
+	padding: 6px 18px;
+}
+
+#ocsms-compose-status {
+	flex: 1;
+	font-size: 0.85em;
+}
+
+#ocsms-compose-status[data-status="success"] { color: #4CAF50; }
+#ocsms-compose-status[data-status="error"]   { color: #D32F2F; }
+#ocsms-compose-status[data-status="loading"] { color: var(--color-text-lighter, #666); }
+
+/* ── Outbox section (pending + failed queue messages) ───────────────────── */
+
+#ocsms-outbox-section {
+	border-top: 2px solid var(--color-border, #ddd);
+	padding: 12px 15px;
+	background: var(--color-background-dark, #f9f9f9);
+}
+
+.ocsms-outbox-header {
+	font-weight: bold;
+	font-size: 0.85em;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--color-text-lighter, #888);
+	margin-bottom: 8px;
+}
+
+.ocsms-outbox-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 6px 10px;
+	margin-bottom: 4px;
+	border-radius: var(--border-radius, 3px);
+	border: 1px dashed var(--color-border, #ccc);
+	background: var(--color-main-background, #fff);
+	max-width: 50%;
+	margin-left: auto; /* align right like sent messages */
+}
+
+.ocsms-outbox-msg {
+	flex: 1;
+	word-break: break-word;
+	font-size: 0.95em;
+}
+
+.ocsms-outbox-meta {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+	white-space: nowrap;
+}
+
+.ocsms-outbox-status {
+	font-size: 0.75em;
+	font-style: italic;
+	padding: 1px 6px;
+	border-radius: 8px;
+}
+
+.ocsms-outbox-status.queued {
+	background: #fff8e1;
+	color: #f57f17;
+}
+
+.ocsms-outbox-status.failed {
+	background: #ffebee;
+	color: #c62828;
+}
+
+.ocsms-outbox-retry {
+	font-size: 0.75em;
+	padding: 1px 8px;
+	background: #c62828;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.ocsms-outbox-retry:hover {
+	background: #b71c1c;
+}
+
+/* ── Modal ──────────────────────────────────────────────────────────────── */
+/**
+Modal
+ */
+
+.modal-mask {
+	position: fixed;
+	z-index: 9998;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, .5);
+	display: table;
+	transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.modal-container {
+	width: 300px;
+	margin: 0px auto;
+	padding: 20px 30px;
+	background-color: #fff;
+	border-radius: 2px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+	transition: all .3s ease;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-body {
+	margin: 20px 0;
+}
+
+.modal-default-button {
+	float: right;
+}
+
+.modal-crit-button {
+	background: #822C19;
+	color: white;
+}
+
+.modal-crit-button:active {
+	color: #822C19;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter {
+	opacity: 0;
+}
+
+.modal-leave-active {
+	opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+	-webkit-transform: scale(1.1);
+	transform: scale(1.1);
+}

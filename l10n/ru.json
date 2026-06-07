@@ -1,0 +1,23 @@
+{ "translations": {
+    "Phone Sync" : "Синхр. телефона",
+    "An app to sync SMS with your cloud" : "Приложение для синхронизации SMS с облаком",
+    "Cancel" : "Отменить",
+    "Confirm" : "Подтвердить",
+    "No contact found." : "Контактов не найдено",
+    "Settings" : "Параметры",
+    "Max messages to load per conversation" : "Максимальное количество загружаемых сообщений в беседе",
+    "Invalid message limit" : "Неправильный лимит сообщения",
+    "Default country code" : "Код страны по умолчанию",
+    "Contact ordering" : "Порядок контактов",
+    "Last message" : "Последнее сообщение",
+    "Label" : "Метка",
+    "Reverse ?" : "Сменить на обратный?",
+    "Notification settings" : "Настройки уведомлений",
+    "Enable" : "Включить",
+    "Disable" : "Отключить",
+    "Are you sure you want to wipe all your messages ?" : "Действительно удалить все сообщения?",
+    "Reset all messages" : "Удалить все сообщения",
+    "%s messages shown of %s messages stored in database." : "%s сообщений показано из %s сохраненных в базе данных",
+    "Please select a conversation from the list to load it." : "Для загрузки разговора выберите его в списке."
+},"pluralForm" :"nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
+}

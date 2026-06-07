@@ -1,0 +1,11 @@
+doc/swagger-ui-bundle.js
+doc/swagger-ui-bundle.js.map
+doc/swagger-ui.css
+doc/swagger-ui.css.map
+doc/swagger-ui.js
+doc/swagger-ui.js.map
+doc/swagger-ui-standalone-preset.js
+doc/swagger-ui-standalone-preset.js.map
+doc/swagger.yml
+doc/index.html
+doc/oauth2-redirect.html
