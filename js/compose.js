@@ -109,11 +109,9 @@
 		if (isNew) {
 			currentPhone = null;
 			newConvPhone = phone;
-			toNumberEl.textContent = phone + ' ' + t('ocsms', '(new)');
 		} else {
 			currentPhone = phone;
 			newConvPhone = null;
-			toNumberEl.textContent = labelForPhone(phone);
 		}
 		positionBar();
 		composeBar.style.display = 'flex';
