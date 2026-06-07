@@ -34,12 +34,8 @@
 		var bar = document.createElement('div');
 		bar.id = 'ocsms-compose-bar';
 		bar.innerHTML =
-			'<div id="ocsms-compose-recipient">'
-			+  '<span class="ocsms-compose-to-label">' + t('ocsms','To') + '</span>'
-			+  '<span id="ocsms-compose-to-number"></span>'
+			'<div id="ocsms-compose-input-row">'
 			+  '<button id="ocsms-newconv-btn" title="' + t('ocsms','New conversation') + '">+</button>'
-			+ '</div>'
-			+ '<div id="ocsms-compose-input-row">'
 			+  '<textarea id="ocsms-compose-msg" placeholder="' + t('ocsms','Ctrl+Enter to send') + '"></textarea>'
 			+  '<button id="ocsms-compose-send" class="primary">' + t('ocsms','Send') + '</button>'
 			+ '</div>'
@@ -47,7 +43,7 @@
 		document.body.appendChild(bar);
 
 		composeBar = bar;
-		toNumberEl = document.getElementById('ocsms-compose-to-number');
+		toNumberEl = null; // recipient line removed
 		msgArea    = document.getElementById('ocsms-compose-msg');
 		sendBtn    = document.getElementById('ocsms-compose-send');
 		statusEl   = document.getElementById('ocsms-compose-status');

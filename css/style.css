@@ -342,23 +342,22 @@ mark.ocsms-hl-active {
     z-index: 1000;
     box-shadow: 0 -2px 8px rgba(0,0,0,.08);
 }
-#ocsms-compose-recipient {
-    display: flex; align-items: center; gap: 6px;
-    font-size: .9em; color: var(--color-text-maxcontrast, #555);
-}
-.ocsms-compose-to-label { font-weight: bold; white-space: nowrap; }
-#ocsms-compose-to-number { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #ocsms-newconv-btn {
-    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
     border: 2px solid var(--color-primary, #0082c9);
-    background: none; color: var(--color-primary, #0082c9);
-    font-size: 1.1em; font-weight: bold; cursor: pointer; padding: 0;
+    background: var(--color-primary, #0082c9);
+    color: #000;
+    font-size: 1.3em; font-weight: bold; cursor: pointer; padding: 0;
     display: inline-flex; align-items: center; justify-content: center;
+    align-self: flex-end; margin-bottom: 4px;
 }
-#ocsms-newconv-btn:hover { background: var(--color-primary, #0082c9); color: #fff; }
+#ocsms-newconv-btn:hover {
+    background: var(--color-primary-hover, #006fad);
+    border-color: var(--color-primary-hover, #006fad);
+}
 #ocsms-compose-input-row { display: flex; gap: 8px; align-items: flex-end; }
 #ocsms-compose-msg {
-    flex: 1; min-height: 44px; max-height: 100px; resize: vertical;
+    flex: 1; min-height: 55px; max-height: 130px; resize: vertical;
     border: 1px solid var(--color-border, #ccc);
     border-radius: var(--border-radius, 3px); padding: 8px;
     font-size: .95em; background: var(--color-main-background, #fff);
