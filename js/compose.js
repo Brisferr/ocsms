@@ -2,9 +2,11 @@
 	'use strict';
 
 	// ── State ──────────────────────────────────────────────────────────────────
-	var currentPhone  = null;
-	var newConvPhone  = null;
-	var outboxTimer   = null;
+	var currentPhone     = null;
+	var newConvPhone     = null;
+	var outboxTimer      = null;
+	var convRefreshTimer = null;
+	var lastConvDate     = 0;
 
 	// DOM refs
 	var composeBar, msgArea, sendBtn, statusEl, newConvBtn;
@@ -169,14 +171,14 @@
 			section.innerHTML = ''; section.style.display = 'none'; return;
 		}
 		section.style.display = 'block';
-		var lbl = { 0: t('ocsms','Queued'), 2: t('ocsms','Failed') };
-		var cls = { 0: 'queued', 2: 'failed' };
+		var lbl = { 0: t('ocsms','Queued'), 1: t('ocsms','Sent ✓'), 2: t('ocsms','Failed') };
+		var cls = { 0: 'queued', 1: 'sent', 2: 'failed' };
 		var html = '<div class="ocsms-outbox-header">' + t('ocsms','Outbox') + '</div>';
 		messages.forEach(function (msg) {
 			var retry = msg.status === 2
 				? '<button class="ocsms-outbox-retry" data-id="' + msg.id + '">' + t('ocsms','Retry') + '</button>'
 				: '';
-			html += '<div class="ocsms-outbox-item">'
+			html += '<div class="ocsms-outbox-item ocsms-outbox-item--' + (cls[msg.status]||'queued') + '">'
 				+ '<div class="ocsms-outbox-msg">' + escapeHtml(msg.msg) + '</div>'
 				+ '<div class="ocsms-outbox-meta">'
 				+ '<span class="ocsms-outbox-status ' + (cls[msg.status]||'queued') + '">' + (lbl[msg.status]||'') + '</span>'
@@ -196,6 +198,38 @@
 		if (outboxTimer) clearInterval(outboxTimer);
 		refreshOutbox();
 		outboxTimer = setInterval(refreshOutbox, 15000);
+	}
+
+	// ── Conversation auto-refresh (catches replies from the other person) ───────
+	function startConvRefresh(phone) {
+		stopConvRefresh();
+		lastConvDate = 0;
+		convRefreshTimer = setInterval(function () {
+			if (!phone) return;
+			fetch(ncUrl('/front-api/v1/new_messages') + '?lastDate=' + lastConvDate, {
+				headers: { 'requesttoken': OC.requestToken }
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (d) {
+				var phonelist = d.phonelist || {};
+				if (phonelist[phone] && phonelist[phone] > lastConvDate) {
+					lastConvDate = phonelist[phone];
+					// New message for current conversation — reload it via Vue
+					var contact = { nav: phone, label: phone, unread: 1, lastmsg: lastConvDate, uid: phone };
+					if (window.ContactList) {
+						window.ContactList.loadConversation(contact);
+					} else if (window.Conversation) {
+						window.Conversation.fetch(contact);
+					}
+					refreshOutbox(phone);
+				}
+			})
+			.catch(function () {});
+		}, 30000);
+	}
+
+	function stopConvRefresh() {
+		if (convRefreshTimer) { clearInterval(convRefreshTimer); convRefreshTimer = null; }
 	}
 
 	// ── Custom header for new conversations ────────────────────────────────────
@@ -276,6 +310,7 @@
 					showNewConvHeader(phone);
 					showBar(phone, true);
 					scheduleOutboxRefresh();
+					startConvRefresh(phone);
 				}, 250);
 			}, 60);
 		}
@@ -285,9 +320,11 @@
 	function onConversationChange() {
 		var phone = phoneFromUrl();
 		hideNewConvHeader();
+		stopConvRefresh();
 		if (phone) {
 			showBar(phone, false);
 			scheduleOutboxRefresh();
+			startConvRefresh(phone);
 		} else {
 			hideBar();
 			renderOutbox([]);

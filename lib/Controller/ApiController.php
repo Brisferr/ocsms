@@ -320,6 +320,18 @@ class ApiController extends Controller {
 	 * APIv4 — Android reports a queued message could not be sent
 	 * @param int $id
 	 */
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 *
+	 * APIv4 — Android calls this after a successful sync to remove sent
+	 * items from the queue (they are now visible in oc_ocsms_smsdatas).
+	 */
+	public function purgeSentQueue() {
+		$this->queueMapper->purgeSent($this->userId);
+		return new JSONResponse(array('status' => true));
+	}
+
 	public function markMessageFailed($id) {
 		if (!is_numeric($id) || (int)$id <= 0) {
 			return new JSONResponse(array("status" => false, "msg" => "Invalid id"), Http::STATUS_BAD_REQUEST);

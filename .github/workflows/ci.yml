@@ -1,0 +1,50 @@
+name: Nextcloud App CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: PHP lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: PHP syntax check
+        run: find . -name "*.php" -not -path "./lib/vendor/*" -not -path "./tests/*" | xargs -P4 php -l
+
+  package:
+    runs-on: ubuntu-latest
+    name: Build app archive
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release archive
+        run: |
+          mkdir -p dist
+          tar --exclude='.git' \
+              --exclude='dist' \
+              --exclude='.github' \
+              --exclude='tests' \
+              --exclude='phpunit.xml' \
+              --exclude='254.patch' \
+              --exclude='Dockerfile' \
+              -czf dist/ocsms.tar.gz .
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ocsms-app
+          path: dist/ocsms.tar.gz
+          retention-days: 90

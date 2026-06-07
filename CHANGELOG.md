@@ -1,51 +1,23 @@
-1.7.0 (-CURRENT)
-* Enhance the contact list using nicer list like in contact app
-* PHP code cleanup (thanks to PHPStorm)
-* Angular app code cleanup & enhancements
-* Start to implement API calls for restoring messages to phones (using ownCloud SMS app)
-* Show the contact avatar in the conversation
+2.5.0
+* Send SMS from Nextcloud web UI via Android phone (OutboxWorker + queue)
+* UnifiedPush support via self-hosted ntfy — near-instant outbox delivery (< 2 s)
+* Incoming replies trigger immediate sync via Android SmsReceiver (SMS_RECEIVED)
+* Conversation auto-refreshes every 30 s — no F5 needed for new messages
+* Outbox section inline in conversation: pending / sent ✓ / failed with retry
+* purgeSentQueue: sent items removed from outbox after sync — no duplicate messages
+* API v4: sendqueue CRUD, device register/unregister, purge-sent endpoint
+* DeviceMapper: stores UnifiedPush endpoints per user (oc_ocsms_devices table)
+* PushNotifier service: HTTP POST to ntfy on message queue
 
-1.6.0
-* You can now limit messages shown when loading a conversation
-* Update AngularJS to 1.4.9
-* You can now disable desktop notifications
-* New application icon (thanks to @skjnldsv)
-* Add singapore country code
+2.4.0
+* Full Nextcloud 25–33 compatibility (PSR-4, QBMapper, executeQuery/executeStatement)
+* IBootstrap Application class replacing legacy appinfo/app.php
+* DB migration: sms_msg and config value columns to text type (NC33 limit fix)
+* Removed broken FullTextSearch provider
+* Routes rewritten as return-array syntax
+* Modern compose bar with Ctrl+Enter to send and New conversation modal
+* NC33 theme: full CSS variable support, dark mode
+* Contact search with real-time filter
+* Message search with highlight and ▲▼ navigation
+* md5 polyfill and date filter for Vue 2.x compatibility
 
-1.5.0
-* You can now delete conversation or single messages (only in owncloud, not on your phone via the app)
-* Fix a scrolling issue (thanks @animalillo)
-* Fix duplicate numbers in conversation in some cases
-* Update AngularJS to 1.3
-* Rewrite all JS code to use AngularJS
-
-1.4.5
-* Fix a MySQL issue with some key length
-* Fix a mischecked variable in sync process which could block the sync process
-
-1.4.4
-* Add more european country codes
-* Code refactoring to respect owncloud app style
-* Minor performance improvements
-
-1.4.3
-* Add south Africa country code
-
-1.4.2
-* Fix appframework check issue
-* Fix angular.js library
-
-1.4.0
-* Use contact avatars into the conversation list
-* Add a user setting to set your country. It permit to deduplicate local/international prefixes and prevent splitted conversations. (Tell us if your country doesn't appear, we will map it, we refer to Google Play Store stats for generate the basic mapping)
-* Add angular.js support into template
-* Re-organize JS sources
-
-1.3.3
-* Fix JS code for HTML5 notifications on browsers which doesn't support it (like IE)
-
-1.3.2
-* Fix an integer overflow on 32bits systems which block the sync process
-
-1.3.1
-* Fix a CSRF issue when phone push datas

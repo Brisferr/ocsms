@@ -49,6 +49,7 @@ return ['routes' => [
 	['name' => 'api#mark_message_failed',    'url' => '/api/v4/messages/sendqueue/{id}/failed',  'verb' => 'POST'],
 	['name' => 'api#register_device',        'url' => '/api/v4/device/register',                 'verb' => 'POST'],
 	['name' => 'api#unregister_device',      'url' => '/api/v4/device/unregister',               'verb' => 'POST'],
+	['name' => 'api#purge_sent_queue',       'url' => '/api/v4/messages/sendqueue/purge-sent',   'verb' => 'POST'],
 
 	// Front API (web UI → compose)
 	['name' => 'api#queue_message',          'url' => '/front-api/v1/send',                      'verb' => 'POST'],

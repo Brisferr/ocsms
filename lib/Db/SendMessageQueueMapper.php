@@ -38,6 +38,19 @@ class SendMessageQueueMapper extends QBMapper {
 		return $messages;
 	}
 
+	/** Deletes all sent messages from the queue for a user.
+	 *  Called by Android after a successful sync so sent items don't
+	 *  duplicate what is now visible in oc_ocsms_smsdatas. */
+	public function purgeSent(string $userId): void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete('ocsms_sendmessage_queue')
+			->where($qb->expr()->andX(
+				$qb->expr()->eq('user_id', $qb->createNamedParameter($userId)),
+				$qb->expr()->eq('status', $qb->createNamedParameter(SendMessageQueue::STATUS_SENT))
+			));
+		$qb->executeStatement();
+	}
+
 	public function resetToPending(string $userId, int $id): bool {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update('ocsms_sendmessage_queue')
@@ -45,7 +58,6 @@ class SendMessageQueueMapper extends QBMapper {
 			->where($qb->expr()->andX(
 				$qb->expr()->eq('id', $qb->createNamedParameter($id)),
 				$qb->expr()->eq('user_id', $qb->createNamedParameter($userId)),
-				// Only allow retrying failed messages
 				$qb->expr()->eq('status', $qb->createNamedParameter(SendMessageQueue::STATUS_FAILED))
 			));
 		return $qb->executeStatement() > 0;
