@@ -14,33 +14,38 @@
     }
 
     // ── Contact search ────────────────────────────────────────────────────────
-    // Keeps the last query so we can re-apply it after Vue re-renders the list.
     var lastContactQuery = '';
+    var applyingFilter   = false; // guard against MutationObserver re-entrancy
 
     function filterContacts(q) {
         lastContactQuery = q;
-        var lq = q.toLowerCase().trim();
+        var lq = q.trim().toLowerCase();
+        applyingFilter = true;
         document.querySelectorAll('#app-mailbox-peers .contact-list li').forEach(function (li) {
             if (!lq) { li.style.display = ''; return; }
 
-            // Match on contact name (peer-label) OR phone number (mailbox-navigation)
-            var label = (li.getAttribute('peer-label') || '').toLowerCase();
-            var a     = li.querySelector('a[mailbox-navigation]');
-            var nav   = a ? (a.getAttribute('mailbox-navigation') || '').toLowerCase() : '';
+            // textContent always contains the rendered label regardless of Vue attribute resolution
+            var text = (li.textContent || '').toLowerCase();
 
-            li.style.display = (label.indexOf(lq) >= 0 || nav.indexOf(lq) >= 0) ? '' : 'none';
+            // Also check mailbox-navigation attribute on the anchor (raw phone number)
+            var a   = li.querySelector('a');
+            var nav = a ? (a.getAttribute('mailbox-navigation') || '').toLowerCase() : '';
+
+            li.style.display = (text.indexOf(lq) >= 0 || nav.indexOf(lq) >= 0) ? '' : 'none';
         });
+        applyingFilter = false;
     }
 
-    // MutationObserver: re-apply the contact filter whenever Vue updates the list.
-    // Vue's checkNewMessages() runs every 10s and resets any inline styles we set,
-    // so we need to re-filter after each DOM mutation on the contact list.
+    // Re-apply the filter when Vue adds/removes contacts (e.g. new conversation).
+    // We watch only childList on the <ul> itself — NOT attributes — to avoid
+    // an infinite loop where setting style.display triggers the observer again.
     function watchContactList() {
         var ul = document.querySelector('#app-mailbox-peers .contact-list');
         if (!ul) { setTimeout(watchContactList, 500); return; }
         new MutationObserver(function () {
-            if (lastContactQuery) filterContacts(lastContactQuery);
-        }).observe(ul, { childList: true, subtree: true, attributes: true });
+            if (applyingFilter || !lastContactQuery) return;
+            filterContacts(lastContactQuery);
+        }).observe(ul, { childList: true, subtree: false });
     }
 
     // ── Message search ────────────────────────────────────────────────────────
@@ -91,8 +96,7 @@
         markIdx = (markIdx + dir + marks.length) % marks.length;
         marks[markIdx].classList.add('ocsms-hl-active');
         scrollToMark(marks[markIdx]);
-        var inp = document.getElementById('ocsms-msg-search-input');
-        updateUI(inp ? inp.value : '');
+        updateUI(document.getElementById('ocsms-msg-search-input')?.value || '');
     }
 
     function updateUI(q) {
@@ -124,13 +128,11 @@
         if (t.id === 'ocsms-search-prev' || t.closest && t.closest('#ocsms-search-prev')) goToMatch(-1);
         if (t.id === 'ocsms-search-next' || t.closest && t.closest('#ocsms-search-next')) goToMatch(1);
 
-        // Reset message search state when switching conversation
+        // Reset message search when switching conversation
         if (t.closest && t.closest('#app-mailbox-peers li')) {
             resetSaved();
             var inp = document.getElementById('ocsms-msg-search-input');
-            if (inp && inp.value.trim()) {
-                setTimeout(function () { doSearch(inp.value.trim()); }, 700);
-            }
+            if (inp && inp.value.trim()) setTimeout(function () { doSearch(inp.value.trim()); }, 700);
         }
     });
 
