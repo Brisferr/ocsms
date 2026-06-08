@@ -1,10 +1,10 @@
-/* ocsms-search.js - Search for ocsms / NC33 */
+/* ocsms-search.js — contact search + message search for NC33 */
 (function () {
     'use strict';
 
     function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-    // Scroll mark into #ocsms-messages-wrap using offsetTop (reliable)
+    // Scroll mark into view inside #ocsms-messages-wrap
     function scrollToMark(mark) {
         var wrap = document.getElementById('ocsms-messages-wrap');
         if (!wrap || !mark) return;
@@ -14,12 +14,33 @@
     }
 
     // ── Contact search ────────────────────────────────────────────────────────
+    // Keeps the last query so we can re-apply it after Vue re-renders the list.
+    var lastContactQuery = '';
+
     function filterContacts(q) {
+        lastContactQuery = q;
         var lq = q.toLowerCase().trim();
         document.querySelectorAll('#app-mailbox-peers .contact-list li').forEach(function (li) {
-            li.style.display = (!lq || (li.getAttribute('peer-label') || li.textContent || '')
-                .toLowerCase().indexOf(lq) >= 0) ? '' : 'none';
+            if (!lq) { li.style.display = ''; return; }
+
+            // Match on contact name (peer-label) OR phone number (mailbox-navigation)
+            var label = (li.getAttribute('peer-label') || '').toLowerCase();
+            var a     = li.querySelector('a[mailbox-navigation]');
+            var nav   = a ? (a.getAttribute('mailbox-navigation') || '').toLowerCase() : '';
+
+            li.style.display = (label.indexOf(lq) >= 0 || nav.indexOf(lq) >= 0) ? '' : 'none';
         });
+    }
+
+    // MutationObserver: re-apply the contact filter whenever Vue updates the list.
+    // Vue's checkNewMessages() runs every 10s and resets any inline styles we set,
+    // so we need to re-filter after each DOM mutation on the contact list.
+    function watchContactList() {
+        var ul = document.querySelector('#app-mailbox-peers .contact-list');
+        if (!ul) { setTimeout(watchContactList, 500); return; }
+        new MutationObserver(function () {
+            if (lastContactQuery) filterContacts(lastContactQuery);
+        }).observe(ul, { childList: true, subtree: true, attributes: true });
     }
 
     // ── Message search ────────────────────────────────────────────────────────
@@ -86,10 +107,10 @@
         if (none)  none.style.display  = (hasQ && n === 0) ? '' : 'none';
     }
 
-    // ── Event delegation on document (survives Vue v-if re-renders) ───────────
+    // ── Event delegation (survives Vue v-if re-renders) ───────────────────────
     document.addEventListener('input', function (e) {
-        if (e.target.id === 'ocsms-contact-search')    filterContacts(e.target.value);
-        if (e.target.id === 'ocsms-msg-search-input')  doSearch(e.target.value.trim());
+        if (e.target.id === 'ocsms-contact-search')   filterContacts(e.target.value);
+        if (e.target.id === 'ocsms-msg-search-input') doSearch(e.target.value.trim());
     });
 
     document.addEventListener('keydown', function (e) {
@@ -103,7 +124,7 @@
         if (t.id === 'ocsms-search-prev' || t.closest && t.closest('#ocsms-search-prev')) goToMatch(-1);
         if (t.id === 'ocsms-search-next' || t.closest && t.closest('#ocsms-search-next')) goToMatch(1);
 
-        // Contact clicked: reset saved HTML, re-search after Vue renders
+        // Reset message search state when switching conversation
         if (t.closest && t.closest('#app-mailbox-peers li')) {
             resetSaved();
             var inp = document.getElementById('ocsms-msg-search-input');
@@ -111,6 +132,11 @@
                 setTimeout(function () { doSearch(inp.value.trim()); }, 700);
             }
         }
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function () {
+        watchContactList();
     });
 
 })();
