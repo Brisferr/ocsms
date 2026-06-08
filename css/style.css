@@ -191,10 +191,26 @@
 .msg-recv .msg-date  { color: var(--color-text-maxcontrast, #666); }
 .msg-recv:hover .msg-date, .msg-sent:hover .msg-date { opacity: 1; }
 
-/* Delete icons */
-#ocsms-messages-wrap .icon-delete { opacity: .25; margin-top: 4px; float: right; }
-#ocsms-messages-wrap .icon-delete:hover { opacity: 1; cursor: pointer; }
-#ocsms-conversation-removal { cursor: pointer; margin-left: 16px; filter: brightness(10); }
+/* Delete buttons — inline SVG, no dependency on NC icon classes */
+.ocsms-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--border-radius, 4px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .4;
+    transition: opacity .15s, background .15s;
+    color: inherit;
+}
+.ocsms-delete-btn:hover { opacity: 1; background: rgba(0,0,0,.08); }
+
+#ocsms-conversation-removal { margin-left: 8px; color: #fff; opacity: .7; }
+#ocsms-conversation-removal:hover { opacity: 1; background: rgba(255,255,255,.15); }
+
+.ocsms-msg-delete-btn { float: right; margin-top: 2px; }
 
 /* Empty state */
 #ocsms-empty-conversation {
@@ -450,6 +466,8 @@ mark.ocsms-hl-active {
 .ocsms-outbox-status { font-size: .75em; padding: 1px 6px; border-radius: 8px; }
 .ocsms-outbox-status.queued { background: #fff8e1; color: #f57f17; }
 .ocsms-outbox-status.failed { background: #ffebee; color: #c62828; }
+.ocsms-outbox-status.sent { background: #e8f5e9; color: #2e7d32; }
+.ocsms-outbox-item--sent { opacity: .75; border-style: solid; }
 .ocsms-outbox-retry { font-size: .75em; padding: 1px 8px; background: #c62828; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 .ocsms-outbox-retry:hover { background: #b71c1c; }
 

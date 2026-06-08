@@ -8,6 +8,7 @@ use \OCA\Ocsms\Lib\CountryCodes;
 \OCP\Util::addScript('ocsms', 'anchorme.min');
 // Production
 \OCP\Util::addScript('ocsms', 'app.min');
+\OCP\Util::addScript('ocsms', 'ocsms-search');
 \OCP\Util::addScript('ocsms', 'compose');
 ?>
 
@@ -112,7 +113,12 @@ use \OCA\Ocsms\Lib\CountryCodes;
                 <div id="ocsms-phone-msg-nb"><?php p($l->t('%s messages shown of %s messages stored in database.', array( '{{ messages.length }}', '{{ totalMessageCount }}')));?></div>
             </div>
             <div id="ocsms-contact-actions">
-                <div id="ocsms-conversation-removal" class="icon-delete icon-delete-white svn delete action" v-on:click="removeConversation();"></div>
+                <button id="ocsms-conversation-removal" class="ocsms-delete-btn" v-on:click="removeConversation();"
+                        title="<?php p($l->t('Delete conversation'));?>">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3H9zm0 5h2v9H9V8zm4 0h2v9h-2V8z"/>
+                    </svg>
+                </button>
             </div>
         </div>
         <div id="ocsms-msg-search" v-if="!isConvLoading && messages.length > 0">
@@ -130,7 +136,12 @@ use \OCA\Ocsms\Lib\CountryCodes;
                 <div v-for="message in orderedMessages">
                     <div v-bind:class="['msg-'+ message.type]">
                         <div v-html="message.content"></div>
-                        <div style="display:block;" id="ocsms-message-removal" class="icon-delete svn delete action" v-on:click="removeConversationMessage(message.id);"></div>
+                        <button class="ocsms-delete-btn ocsms-msg-delete-btn" v-on:click="removeConversationMessage(message.id);"
+                                title="<?php p($l->t('Delete message'));?>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                <path d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3H9zm0 5h2v9H9V8zm4 0h2v9h-2V8z"/>
+                            </svg>
+                        </button>
                         <div class="msg-date">{{ message.date | date:'medium' }}</div>
                     </div>
                     <div class="msg-spacer"></div>
