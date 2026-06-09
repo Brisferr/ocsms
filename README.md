@@ -1,5 +1,7 @@
 # Phone Sync (for Nextcloud & ownCloud)
 
+This fork has been created with Claude-code.  No human has code any line or create anylin except this one :-)
+
 Phone Sync provides a webinterface to display your SMS conversations. SMS conversations are pushed by your Android devices using the [Android client](https://github.com/nerzhul/ownCloud-SMS-App), available on [F-Droid](https://f-droid.org/repository/browse/?fdid=fr.unix_experience.owncloud_sms).
 
 ## :arrow_forward: Access
